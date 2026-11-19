@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "EduSuite Demo"
+description = "A client-facing education SaaS demo for schools, groups, and universities, showing adaptive modules, academic administration, family services, and international offline-ready workflows."
+version = "1.0.0"
+id = "artifacts/edusuite-demo"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21142
+
+[services.development]
+run = "pnpm --filter @workspace/edusuite-demo run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/edusuite-demo", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/edusuite-demo/out"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21142"
+BASE_PATH = "/"

@@ -1,0 +1,1 @@
+- [Next.js App Router conversion](nextjs-app-router-conversion.md) — remove leftover `src/pages` directories when converting a starter to App Router, even if they are empty.
