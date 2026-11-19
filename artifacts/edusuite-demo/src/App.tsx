@@ -5,17 +5,20 @@ import {
   Activity, Archive, ArrowDownRight, ArrowUpRight, Banknote, BookOpen, Bus,
   CalendarDays, Check, ChevronRight, CircleHelp, Clock3, Cloud, Coins, CreditCard,
   Download, FileBarChart2, FileText, GraduationCap, House, Languages, Library,
-  LockKeyhole, Menu, MessageCircle, MoreHorizontal, Package, Plus, Search, Send,
+  LockKeyhole, LogOut, Menu, MessageCircle, Package, Plus, Search, Send,
   ShieldCheck, Sparkles, Stethoscope, Users, Utensils, Wallet, WifiOff,
   BriefcaseBusiness, Bell, Settings2, Building2, UserRound, ChartNoAxesCombined,
   CalendarCheck, ShieldAlert, CircleDollarSign, type LucideIcon,
 } from 'lucide-react';
+import DemoLogin, { type DemoAccount, type InstitutionProfile } from './components/DemoLogin';
+import { demoAccounts, demoProfiles } from './demo-config';
 
-type EduType = 'Maternelle' | 'Primaire' | 'Collège' | 'Lycée' | 'Université';
-type ViewKey = 'overview' | 'learners' | 'attendance' | 'academics' | 'finance' | 'hr' | 'family' | 'learnerPortal' | 'services' | 'assistant' | 'settings' | 'saas';
+type EduType = 'Maternelle' | 'Primaire' | 'Collège' | 'Lycée' | 'Université' | 'Multi-cycles';
+type ViewKey = 'overview' | 'learners' | 'attendance' | 'academics' | 'finance' | 'hr' | 'family' | 'learnerPortal' | 'services' | 'assistant' | 'settings' | 'saas' | 'saasOwner';
 type Learner = { id: number; name: string; grade: string; guardian: string; attendanceState: 'Présent' | 'Absent' | 'En retard'; academicSummary: string; feeStatus: 'À jour' | 'En attente' | 'Impayé' };
 type School = { id: string; name: string; educationType: EduType; country: string; currency: string; schoolYear: string; enabledModules: string[] };
 type SyncOperation = { id: number; type: string; createdAt: string; status: string };
+type DemoSession = { account: DemoAccount; profile: InstitutionProfile };
 
 const schools: School[] = [
   { id: 'arc', name: 'École Les Arcades', educationType: 'Primaire', country: 'Sénégal', currency: 'XOF', schoolYear: '2026–2027', enabledModules: ['Transport', 'Cantine', 'Bibliothèque', 'Santé', 'Discipline', 'Activités', 'Équipement', 'Visiteurs', 'Événements'] },
@@ -23,6 +26,7 @@ const schools: School[] = [
   { id: 'college', name: 'Collège Horizon', educationType: 'Collège', country: 'France', currency: 'EUR', schoolYear: '2026–2027', enabledModules: ['Transport', 'Cantine', 'Bibliothèque', 'Santé', 'Discipline', 'Activités', 'Équipement', 'Visiteurs', 'Événements'] },
   { id: 'lycee', name: 'Lycée Horizon', educationType: 'Lycée', country: 'France', currency: 'EUR', schoolYear: '2026–2027', enabledModules: ['Transport', 'Cantine', 'Bibliothèque', 'Santé', 'Discipline', 'Internat', 'Activités', 'Équipement', 'Visiteurs', 'Événements'] },
   { id: 'atlas', name: 'Université Atlas', educationType: 'Université', country: 'Maroc', currency: 'MAD', schoolYear: '2026–2027', enabledModules: ['Transport', 'Cantine', 'Bibliothèque', 'Santé', 'Activités', 'Équipement', 'Visiteurs', 'Événements'] },
+  { id: 'multi', name: 'Complexe scolaire Horizon', educationType: 'Multi-cycles', country: 'Sénégal', currency: 'XOF', schoolYear: '2026–2027', enabledModules: ['Transport', 'Cantine', 'Bibliothèque', 'Santé', 'Discipline', 'Internat', 'Activités', 'Équipement', 'Visiteurs', 'Événements'] },
 ];
 
 const initialLearners: Learner[] = [
@@ -55,6 +59,12 @@ const initialLearnersBySchool: Record<string, Learner[]> = {
     { id: 502, name: 'Mehdi Amrani', grade: 'Master 1 · Économie', guardian: 'Contact étudiant', attendanceState: 'Présent', academicSummary: 'Bien', feeStatus: 'En attente' },
     { id: 503, name: 'Yasmin Benali', grade: 'Licence 1 · Sciences', guardian: 'Contact étudiant', attendanceState: 'Absent', academicSummary: 'En progrès', feeStatus: 'À jour' },
   ],
+  multi: [
+    { id: 601, name: 'Lila Koné', grade: 'Grande section · A', guardian: 'Mme Koné', attendanceState: 'Présent', academicSummary: 'En progrès', feeStatus: 'À jour' },
+    { id: 602, name: 'Moussa Diop', grade: 'CM2 · B', guardian: 'Mme Diop', attendanceState: 'Présent', academicSummary: 'Bien', feeStatus: 'À jour' },
+    { id: 603, name: 'Inès Fall', grade: '4e · A', guardian: 'M. Fall', attendanceState: 'Absent', academicSummary: 'Très bien', feeStatus: 'En attente' },
+    { id: 604, name: 'Amadou Sarr', grade: 'Terminale · C', guardian: 'Mme Sarr', attendanceState: 'En retard', academicSummary: 'À accompagner', feeStatus: 'À jour' },
+  ],
 };
 const staff = [
   { name: 'Mariama Sène', role: 'Directrice', dept: 'Direction', presence: 'Présente' },
@@ -77,12 +87,13 @@ const modules: { name: string; icon: LucideIcon; desc: string }[] = [
 const navIcons: Record<string, LucideIcon> = {
   overview: ChartNoAxesCombined, learners: Users, attendance: CalendarCheck, academics: BookOpen,
   finance: Wallet, hr: BriefcaseBusiness, family: UserRound, learnerPortal: GraduationCap,
-  services: House, assistant: Sparkles, settings: Settings2, saas: Building2,
+  services: House, assistant: Sparkles, settings: Settings2, saas: Building2, saasOwner: Building2,
 };
 const navLabels: Record<ViewKey, string> = {
   overview: 'Vue d’ensemble', learners: 'Élèves & dossiers', attendance: 'Présences', academics: 'Pédagogie & résultats',
   finance: 'Finances', hr: 'Ressources humaines', family: 'Espace familles', learnerPortal: 'Espace apprenant',
   services: 'Services scolaires', assistant: 'Assistant Édu', settings: 'Cadre international', saas: 'Centre de pilotage',
+  saasOwner: 'Espace propriétaire',
 };
 
 function App() {
@@ -90,6 +101,8 @@ function App() {
   const [schoolId, setSchoolId] = useState('arc');
   const [groupMode, setGroupMode] = useState(false);
   const [role, setRole] = useState('Direction');
+  const [session, setSession] = useState<DemoSession | null>(null);
+  const [activeThemeId, setActiveThemeId] = useState('primaire');
   const [learnersBySchool, setLearnersBySchool] = useState<Record<string, Learner[]>>(initialLearnersBySchool);
   const [query, setQuery] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -149,6 +162,7 @@ function App() {
   const filteredLearners = useMemo(() => learnersForSchool.filter((item) => `${item.name} ${item.grade} ${item.guardian}`.toLowerCase().includes(query.toLowerCase())), [learnersForSchool, query]);
   const visibleNav = useMemo<ViewKey[]>(() => {
     if (role === 'Administrateur SaaS') return ['saas'];
+    if (role === 'Propriétaire du SaaS') return ['saasOwner'];
     if (role === 'Parent') return ['family'] as ViewKey[];
     if (role === 'Apprenant') return ['learnerPortal', 'academics', 'services'] as ViewKey[];
     const base: ViewKey[] = ['overview', 'learners', 'attendance', 'academics', 'finance', 'hr', 'family', 'learnerPortal', 'services', 'assistant', 'settings'];
@@ -156,11 +170,50 @@ function App() {
     if (role === 'Gestionnaire') return ['overview', 'learners', 'attendance', 'finance', 'hr', 'services', 'settings'];
     return base;
   }, [role]);
-  const relevantModules = modules.filter((module) => school.enabledModules.includes(module.name) && (module.name !== 'Internat' || school.educationType === 'Collège' || school.educationType === 'Lycée' || school.educationType === 'Université'));
+  const relevantModules = modules.filter((module) => school.enabledModules.includes(module.name) && (module.name !== 'Internat' || school.educationType === 'Collège' || school.educationType === 'Lycée' || school.educationType === 'Université' || school.educationType === 'Multi-cycles'));
   const changeView = (next: ViewKey) => { setView(next); setMobileOpen(false); setQuery(''); };
+  const handleLogin = (account: DemoAccount, profile: InstitutionProfile) => {
+    const schoolForProfile: Record<string, string> = {
+      maternelle: 'petit',
+      primaire: 'arc',
+      college: 'college',
+      lycee: 'lycee',
+      universite: 'atlas',
+      'groupe-multi-etablissements': 'arc',
+      'multi-cycles': 'multi',
+    };
+    const nextSchoolId = schoolForProfile[profile.id] ?? 'arc';
+    const nextSchool = schools.find((item) => item.id === nextSchoolId) ?? schools[0];
+    setSession({ account, profile });
+    setRole(account.role);
+    setSchoolId(nextSchool.id);
+    setCurrency(nextSchool.currency);
+    setActiveThemeId(profile.id);
+    setGroupMode(profile.id === 'groupe-multi-etablissements' || account.role === 'Direction de groupe' || account.role === 'Administrateur SaaS' || account.role === 'Propriétaire du SaaS');
+    setView(account.role === 'Administrateur SaaS' ? 'saas' : account.role === 'Propriétaire du SaaS' ? 'saasOwner' : account.role === 'Parent' ? 'family' : account.role === 'Apprenant' ? 'learnerPortal' : 'overview');
+  };
+  const logout = () => {
+    setSession(null);
+    setRole('Direction');
+    setView('overview');
+    setSchoolId('arc');
+    setCurrency(schools[0].currency);
+    setGroupMode(false);
+    setActiveThemeId('primaire');
+  };
+  const selectSchool = (id: string) => {
+    const nextSchool = schools.find((item) => item.id === id);
+    if (!nextSchool) return;
+    setSchoolId(id);
+    setCurrency(nextSchool.currency);
+    setActiveThemeId(themeForEducationType(nextSchool.educationType));
+    addSync('Changement d’environnement');
+  };
+
+  if (!session) return <DemoLogin profiles={demoProfiles} accounts={demoAccounts} onLogin={handleLogin} />;
 
   return (
-    <div className="app">
+    <div className="app" data-edu-theme={activeThemeId}>
       <div className="shell">
         <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}>
           <div className="brand">
@@ -170,8 +223,8 @@ function App() {
           </div>
           <div className="school-switch">
             <label>{groupMode ? 'Groupe scolaire · environnement' : 'Établissement'}</label>
-            <select className="school-select" value={schoolId} onChange={(e) => { setSchoolId(e.target.value); setCurrency(schools.find((item) => item.id === e.target.value)?.currency ?? 'XOF'); addSync('Changement d’environnement'); }} data-testid="select-institution">
-              {schools.filter((item) => groupMode || role === 'Administrateur SaaS' || item.id === school.id).map((item) => <option key={item.id} value={item.id}>{item.educationType} · {item.name}</option>)}
+            <select className="school-select" value={schoolId} onChange={(e) => selectSchool(e.target.value)} data-testid="select-institution">
+              {schools.filter((item) => groupMode || role === 'Administrateur SaaS' || role === 'Propriétaire du SaaS' || item.id === school.id).map((item) => <option key={item.id} value={item.id}>{item.educationType} · {item.name}</option>)}
             </select>
           </div>
           <div className="nav-label">Espace établissement</div>
@@ -188,7 +241,7 @@ function App() {
           </>}
           <div className="sidebar-foot">
             <div className="demo-note">Données fictives · environnement de présentation<br />Aucune donnée scolaire réelle n’est enregistrée.</div>
-            <div className="user-chip"><div className="avatar">MS</div><div><div className="user-name">Mariama Sène</div><div className="user-role">{role} · espace démo</div></div><MoreHorizontal size={16} /></div>
+            <div className="user-chip"><div className="avatar">{session.account.initials}</div><div className="user-identity"><div className="user-name">{session.account.name}</div><div className="user-role">{session.account.role} · espace démo</div><div className="user-email">{session.account.email}</div></div></div>
           </div>
         </aside>
 
@@ -199,11 +252,10 @@ function App() {
               <div className="crumb"><span>Établissement</span><ChevronRight size={12} /><strong>{navLabels[view]}</strong></div>
             </div>
             <div className="top-actions">
-              <select className="role-select" aria-label="Choisir le rôle de démonstration" value={role} onChange={(e) => { const next = e.target.value; setRole(next); if (next === 'Direction de groupe') setGroupMode(true); if (next === 'Administrateur SaaS') setView('saas'); else if (next === 'Parent') setView('family'); else if (next === 'Apprenant') setView('learnerPortal'); else if (view === 'saas' || (next === 'Enseignant' && !['overview', 'learners', 'attendance', 'academics', 'services', 'assistant'].includes(view)) || (next === 'Gestionnaire' && !['overview', 'learners', 'attendance', 'finance', 'hr', 'services', 'settings'].includes(view))) setView('overview'); }} data-testid="select-demo-role">
-                {['Direction', 'Direction de groupe', 'Administrateur SaaS', 'Enseignant', 'Gestionnaire', 'Parent', 'Apprenant'].map((item) => <option key={item} value={item}>{item} · démo</option>)}
-              </select>
+              <span className="top-role-pill" data-testid="current-user-role">{session.account.role} · démo</span>
               <button className="icon-button" aria-label={offline ? 'Repasser en mode connecté de démonstration' : 'Démontrer le mode hors ligne'} title={offline ? 'Mode hors ligne activé' : 'Connecté (simulation)'} onClick={() => { const nextOffline = !offline; setOffline(nextOffline); setSyncs((items) => [{ id: Date.now(), type: nextOffline ? 'Passage en mode hors ligne' : 'Reconnexion simulée', createdAt: new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' }).format(new Date()), status: nextOffline ? 'En attente' : 'Démontré' }, ...items]); }} data-testid="toggle-offline"><Cloud size={15} />{offline && <span className="online-dot" style={{ background: '#d89c3f' }} />}</button>
               <button className="icon-button" aria-label="Notifications de démonstration" onClick={() => changeView('overview')}><Bell size={15} /><span className="online-dot" /></button>
+              <button className="logout-button top-logout" onClick={logout} data-testid="button-logout"><LogOut size={14} /><span>Quitter</span></button>
             </div>
           </header>
           <div className="content fade-in" key={view}>
@@ -220,9 +272,9 @@ function App() {
             {view === 'family' && <FamilyView />}
             {view === 'learnerPortal' && <LearnerPortal school={school} />}
             {view === 'services' && <ServicesView modules={relevantModules} onAction={addSync} />}
-            {view === 'assistant' && <AssistantView value={assistantText} setValue={setAssistantText} reply={assistantReply} onAsk={() => { setAssistantReply(makeAssistantReply(assistantText, school)); addSync('Question à l’assistant démo'); }} />}
+            {view === 'assistant' && <AssistantView name={session.account.name.split(' ')[0]} value={assistantText} setValue={setAssistantText} reply={assistantReply} onAsk={() => { setAssistantReply(makeAssistantReply(assistantText, school)); addSync('Question à l’assistant démo'); }} />}
             {view === 'settings' && <SettingsView school={school} groupMode={groupMode} setGroupMode={setGroupMode} language={language} setLanguage={setLanguage} currency={currency} setCurrency={setCurrency} settings={settings} setSettings={setSettings} syncs={syncs} onSync={addSync} />}
-            {view === 'saas' && <SaasView schools={schools} current={school} groupMode={groupMode} setGroupMode={setGroupMode} onSelect={(id) => { setSchoolId(id); setCurrency(schools.find((item) => item.id === id)?.currency ?? 'XOF'); addSync('Environnement groupe sélectionné'); }} />}
+            {(view === 'saas' || view === 'saasOwner') && <SaasView schools={schools} current={school} groupMode={groupMode} setGroupMode={setGroupMode} ownerMode={view === 'saasOwner'} onSelect={(id) => { selectSchool(id); addSync('Environnement groupe sélectionné'); }} />}
           </div>
         </main>
       </div>
