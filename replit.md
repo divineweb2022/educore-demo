@@ -6,7 +6,7 @@ A French-first, Vercel-ready Next.js demonstration of a configurable education S
 
 - `npm ci` — install the root Next.js app dependencies
 - `npm run dev` — run the Next.js demo
-- `npm run build` — build the static Next.js export for Vercel
+- `npm run build` — build the Next.js app for Vercel
 - `npm run typecheck` — typecheck the demo
 - The demo uses sample data only; the separate API and database scaffold are not connected to it or included in the Next.js build.
 
@@ -30,7 +30,7 @@ A French-first, Vercel-ready Next.js demonstration of a configurable education S
 
 ## Architecture decisions
 
-- The demo is a static Next.js export so it can be presented from Vercel without provisioning backend services.
+- The demo uses browser-side sample data and does not require the separate API or database services.
 - Sample interactions run in the browser and must not be presented as production persistence, authentication, tenant isolation, or synchronization.
 - Education-level-specific experiences should hide irrelevant modules, while the product vision continues to cover the full K–12 and university scope.
 

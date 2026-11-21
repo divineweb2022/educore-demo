@@ -27,7 +27,7 @@ npm run build
 
 ## Déployer sur Vercel
 
-Importez le dépôt dans Vercel et laissez **Root Directory** sur `./`. Vercel utilise `npm ci`, exécute `npm run build` et publie le dossier `out` généré par l’export statique Next.js.
+Importez le dépôt dans Vercel et laissez **Root Directory** sur `./`. Vercel utilise `npm ci`, exécute `npm run build` et détecte automatiquement la sortie Next.js. Ne définissez pas de dossier de sortie personnalisé.
 
 Aucune variable d’environnement n’est nécessaire pour cette démo statique.
 
