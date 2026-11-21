@@ -603,8 +603,8 @@ function App() {
               <span className="top-role-pill" data-testid="current-user-role">{role} · démo</span>
               {!isPortal && <button className="icon-button" aria-label={offline ? 'Repasser en mode connecté de démonstration' : 'Démontrer le mode hors ligne'} title={offline ? 'Mode hors ligne activé' : 'Connecté (simulation)'} onClick={() => { const nextOffline = !offline; setOffline(nextOffline); setSyncs((items) => [{ id: Date.now(), type: nextOffline ? 'Passage en mode hors ligne' : 'Reconnexion simulée', createdAt: new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' }).format(new Date()), status: nextOffline ? 'En attente' : 'Démontré' }, ...items]); }} data-testid="toggle-offline"><Cloud size={15} />{offline && <span className="online-dot" style={{ background: '#d89c3f' }} />}</button>}
               {!isPortal && <button className="icon-button" aria-label="Notifications de démonstration" onClick={() => changeView('overview')}><Bell size={15} /><span className="online-dot" /></button>}
-              <button className="logout-button top-logout" onClick={resetDemo} data-testid="button-reset-demo" title="Réinitialiser les données de démonstration"><RotateCcw size={14} /><span>Réinitialiser</span></button>
-              <button className="logout-button top-logout" onClick={logout} data-testid="button-logout"><LogOut size={14} /><span>Quitter</span></button>
+              <button className="logout-button top-logout" onClick={resetDemo} data-testid="button-reset-demo" title="Réinitialiser les données de démonstration" aria-label="Réinitialiser la démo"><RotateCcw size={14} /><span>Réinitialiser</span></button>
+              <button className="logout-button top-logout" onClick={logout} data-testid="button-logout" aria-label="Quitter la démo"><LogOut size={14} /><span>Quitter</span></button>
             </div>
           </header>
           <div className="content fade-in" key={view}>
