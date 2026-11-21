@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import "../src/index.css";
 
 export const metadata: Metadata = {
-  title: "EduSuite — La plateforme éducative qui s’adapte à vous",
+  title: "EduCore — La plateforme éducative qui s’adapte à vous",
   description:
     "Une plateforme de gestion éducative pensée pour les écoles, groupes scolaires et universités.",
 };

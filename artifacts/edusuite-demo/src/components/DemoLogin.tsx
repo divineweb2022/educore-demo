@@ -10,6 +10,7 @@ import {
   KeyRound,
   LockKeyhole,
   Mail,
+  Search,
   ShieldCheck,
   Sparkles,
   UserRound,
@@ -18,7 +19,7 @@ import {
 import './demo-login.css';
 
 export type InstitutionProfile = { id: string; label: string; description: string };
-export type DemoAccount = { id: string; name: string; role: string; email: string; password: string; initials: string; description: string };
+export type DemoAccount = { id: string; name: string; role: string; email: string; password: string; initials: string; description: string; institutionProfiles: string[] };
 export type DemoLoginProps = { profiles: InstitutionProfile[]; accounts: DemoAccount[]; onLogin: (account: DemoAccount, profile: InstitutionProfile) => void };
 
 const palettes = [
@@ -47,12 +48,16 @@ function profilePalette(profile: InstitutionProfile | undefined) {
 export default function DemoLogin({ profiles, accounts, onLogin }: DemoLoginProps) {
   const [selectedProfileId, setSelectedProfileId] = useState('');
   const [selectedAccountId, setSelectedAccountId] = useState('');
+  const [accountQuery, setAccountQuery] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errors, setErrors] = useState<{ profile?: string; email?: string; password?: string; form?: string }>({});
   const selectedProfile = profiles.find((profile) => profile.id === selectedProfileId);
   const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
+  const matchingAccounts = accounts
+    .filter((account) => !selectedProfile || account.institutionProfiles.includes(selectedProfile.id))
+    .filter((account) => `${account.role} ${account.description}`.toLocaleLowerCase('fr').includes(accountQuery.toLocaleLowerCase('fr')));
   const palette = useMemo(() => profilePalette(selectedProfile), [selectedProfile]);
   const style = {
     '--login-accent': palette.accent,
@@ -63,6 +68,7 @@ export default function DemoLogin({ profiles, accounts, onLogin }: DemoLoginProp
   const chooseProfile = (profile: InstitutionProfile) => {
     setSelectedProfileId(profile.id);
     setSelectedAccountId('');
+    setAccountQuery('');
     setEmail('');
     setPassword('');
     setErrors({});
@@ -91,6 +97,10 @@ export default function DemoLogin({ profiles, accounts, onLogin }: DemoLoginProp
       setErrors({ form: 'Ces identifiants ne correspondent à aucun compte de démonstration fourni.' });
       return;
     }
+    if (!selectedProfile || !match.institutionProfiles.includes(selectedProfile.id)) {
+      setErrors({ form: 'Ce rôle n’est pas disponible pour le type d’établissement sélectionné.' });
+      return;
+    }
     setErrors({});
     onLogin(match, selectedProfile!);
   };
@@ -108,10 +118,10 @@ export default function DemoLogin({ profiles, accounts, onLogin }: DemoLoginProp
     <main className="demo-login" style={style} data-testid="demo-login">
       <div className="login-frame">
         <header className="login-topline">
-          <div className="login-brand" aria-label="EduSuite">
+          <div className="login-brand" aria-label="EduCore">
             <div className="login-brand-mark"><GraduationCap size={20} strokeWidth={1.8} /></div>
             <div>
-              <div className="login-wordmark">édu<span>suite</span></div>
+              <div className="login-wordmark">edu<span>core</span></div>
               <span className="login-brand-caption">La vie scolaire, en accord</span>
             </div>
           </div>
@@ -141,7 +151,7 @@ export default function DemoLogin({ profiles, accounts, onLogin }: DemoLoginProp
             <div className="login-panel-heading">
               <div>
                 <h2 id="login-panel-title">Accéder à la démo</h2>
-                <p>Choisissez un environnement, puis un profil de connexion.</p>
+                <p>Choisissez un établissement et un rôle métier pour parcourir les espaces correspondants.</p>
               </div>
               <span className="login-step">Accès démo</span>
             </div>
@@ -171,24 +181,26 @@ export default function DemoLogin({ profiles, accounts, onLogin }: DemoLoginProp
             {errors.profile && <p className="login-error" role="alert" data-testid="profile-error">{errors.profile}</p>}
 
             <div className="login-account-block">
-              <div className="login-section-label" id="account-label">02 <span>Compte de démonstration</span></div>
+              <div className="login-section-label" id="account-label">02 <span>Rôle et compte de démonstration</span></div>
               {!selectedProfile ? (
                 <div className="login-empty">Sélectionnez un établissement pour afficher les comptes de démonstration.</div>
               ) : accounts.length ? (
+                <>
+                <label className="login-account-search"><Search size={14} /><span className="sr-only">Rechercher un rôle</span><input aria-label="Rechercher un rôle ou un compte" value={accountQuery} onChange={(event) => setAccountQuery(event.target.value)} placeholder="Rechercher un rôle ou un compte…" /></label>
                 <div className="login-account-list" role="group" aria-labelledby="account-label" data-testid="account-list">
-                  {accounts.map((account) => (
+                  {matchingAccounts.map((account) => (
                     <button
                       className="login-account-option"
                       type="button"
                       key={account.id}
                       aria-pressed={selectedAccountId === account.id}
-                      aria-label={`Choisir le compte fictif de ${account.name}, ${account.role}`}
+                      aria-label={`Choisir le rôle ${account.role}`}
                       onClick={() => chooseAccount(account)}
                       data-testid={`account-${account.id}`}
                     >
                       <span className="account-top">
-                        <span className="account-avatar" aria-hidden="true">{account.initials}</span>
-                        <span className="account-person"><strong>{account.name}</strong><small>{account.role} · {account.description}</small></span>
+                        <span className="account-avatar" aria-hidden="true"><UserRound size={15} /></span>
+                        <span className="account-person"><strong>{account.role}</strong><small>{account.description}</small></span>
                         {selectedAccountId === account.id && <ShieldCheck className="account-picked" size={16} aria-label="Compte sélectionné" />}
                       </span>
                       <span className="account-credentials">
@@ -197,7 +209,9 @@ export default function DemoLogin({ profiles, accounts, onLogin }: DemoLoginProp
                       </span>
                     </button>
                   ))}
+                  {!matchingAccounts.length && <div className="login-empty">Aucun rôle ne correspond à cette recherche.</div>}
                 </div>
+                </>
               ) : (
                 <div className="login-empty" role="status">Aucun compte fictif n’est disponible dans cette démonstration.</div>
               )}
@@ -270,7 +284,7 @@ export default function DemoLogin({ profiles, accounts, onLogin }: DemoLoginProp
         </div>
 
         <footer className="login-footer">
-          <span><strong>EduSuite Demo</strong> · Environnement de présentation</span>
+          <span><strong>EduCore Demo</strong> · Environnement de présentation</span>
           <span>Écoles · Groupes · Universités</span>
         </footer>
       </div>
