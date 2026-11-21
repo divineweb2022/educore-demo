@@ -4,19 +4,15 @@ A French-first, Vercel-ready Next.js demonstration of a configurable education S
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm --filter @workspace/edusuite-demo run dev` — run the Next.js demo
-- `pnpm --filter @workspace/edusuite-demo run build` — build the static Next.js export for Vercel
-- `pnpm --filter @workspace/edusuite-demo run typecheck` — typecheck the demo
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- The demo uses sample data only; the existing API and database scaffold are not connected to it.
+- `npm ci` — install the root Next.js app dependencies
+- `npm run dev` — run the Next.js demo
+- `npm run build` — build the static Next.js export for Vercel
+- `npm run typecheck` — typecheck the demo
+- The demo uses sample data only; the separate API and database scaffold are not connected to it or included in the Next.js build.
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
+- npm, Node.js 20.9 or newer, TypeScript 5.9
 - Demo: Next.js App Router with static export for Vercel
 - API: Express 5
 - DB: PostgreSQL + Drizzle ORM
@@ -26,8 +22,9 @@ A French-first, Vercel-ready Next.js demonstration of a configurable education S
 
 ## Where things live
 
-- `artifacts/edusuite-demo/app/` — Next.js App Router entry points and metadata
-- `artifacts/edusuite-demo/src/` — interactive demo interface and theme
+- `app/` — Next.js App Router entry points and metadata
+- `src/` — interactive demo interface and theme
+- `public/` — static assets
 - `lib/api-spec/openapi.yaml` — API contract source of truth (currently health check only)
 - `lib/db/src/schema/` — database schema source (currently empty)
 
@@ -52,7 +49,3 @@ A French-first, Vercel-ready Next.js demonstration of a configurable education S
 ## Gotchas
 
 - Keep the demo sample-only until real tenant security, identity, audit, and synchronization services exist.
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details

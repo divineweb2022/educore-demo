@@ -4,16 +4,16 @@ Client-facing, French-first education SaaS demo built with Next.js App Router. T
 
 ## Lancer en local
 
-Prerequisites: Node.js 20.9 or newer and pnpm 10.
+Prérequis : Node.js 20.9 ou supérieur et npm.
 
-Depuis la racine du dépôt, installez les dépendances une fois puis démarrez le serveur :
+Depuis la racine du dépôt, installez les dépendances puis démarrez le serveur :
 
 ```powershell
-pnpm install
-pnpm dev
+npm ci
+npm run dev
 ```
 
-Ouvrez ensuite [http://localhost:3000](http://localhost:3000). Le serveur Next.js démarre sur le port 3000.
+Ouvrez ensuite [http://localhost:3000](http://localhost:3000).
 
 Le site public commercial est disponible sur `http://localhost:3000/`.
 La page de connexion client est disponible sur `http://localhost:3000/login`.
@@ -21,39 +21,13 @@ Après authentification fictive, l’application s’ouvre sur `http://localhost
 
 Pour vérifier la compilation de production :
 
-```sh
-pnpm --filter @workspace/edusuite-demo run build
-```
-
-## Backend PostgreSQL
-
 ```powershell
-Copy-Item .env.example .env
-docker compose up -d postgres
-$env:DATABASE_URL="postgresql://educore:educore@localhost:5432/educore"
-$env:PORT="5000"
-pnpm --filter @workspace/db run push
-pnpm --filter @workspace/scripts run seed
-pnpm --filter @workspace/api-server run dev
+npm run build
 ```
-
-L’API démarre sur `http://localhost:5000/api`. Les endpoints de démonstration couvrent apprenants, factures, paiements simulés, transactions et réinitialisation.
 
 ## Déployer sur Vercel
 
-### Option recommandée : monorepo à la racine
-
-Importez le dépôt dans Vercel sans définir `Root Directory` sur un dossier vide. Le fichier `vercel.json` à la racine lance automatiquement :
-
-```text
-pnpm --filter @workspace/edusuite-demo run build
-```
-
-La sortie statique est attendue dans `artifacts/edusuite-demo/out`.
-
-### Option alternative : application seule
-
-Dans les paramètres Vercel, choisissez `artifacts/edusuite-demo` comme **Root Directory**. Vercel détectera alors directement Next.js et utilisera `pnpm run build`.
+Importez le dépôt dans Vercel et laissez **Root Directory** sur `./`. Vercel utilise `npm ci`, exécute `npm run build` et publie le dossier `out` généré par l’export statique Next.js.
 
 Aucune variable d’environnement n’est nécessaire pour cette démo statique.
 
