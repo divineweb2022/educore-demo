@@ -302,6 +302,40 @@ function App() {
   const capabilities = customRoles.find((item) => item.name === role)?.capabilities ?? roleCapabilities[role] ?? [];
 
   useEffect(() => {
+    if (session) return;
+    const stored = window.localStorage.getItem('educore-demo-session');
+    if (!stored) return;
+    try {
+      const saved = JSON.parse(stored) as DemoSession;
+      const account = demoAccounts.find((item) => item.id === saved.account.id);
+      const profile = demoProfiles.find((item) => item.id === saved.profile.id);
+      if (!account || !profile) {
+        window.localStorage.removeItem('educore-demo-session');
+        return;
+      }
+      const schoolForProfile: Record<string, string> = {
+        maternelle: 'petit',
+        primaire: 'arc',
+        college: 'college',
+        lycee: 'lycee',
+        universite: 'atlas',
+        'groupe-multi-etablissements': 'multi',
+        'multi-cycles': 'multi',
+      };
+      const nextSchoolId = account.role === 'Responsable de département universitaire' ? 'atlas' : schoolForProfile[profile.id] ?? 'arc';
+      const nextSchool = schools.find((item) => item.id === nextSchoolId) ?? schools[0];
+      setSession({ account, profile });
+      setRole(account.role);
+      setSchoolId(nextSchool.id);
+      setCurrency(nextSchool.currency);
+      setActiveThemeId(themeForEducationType(nextSchool.educationType));
+      setView(account.role === 'Parent / responsable légal' ? 'family' : account.role === 'Élève / étudiant' ? 'learnerPortal' : roleNavigation[account.role]?.[0] ?? 'overview');
+    } catch {
+      window.localStorage.removeItem('educore-demo-session');
+    }
+  }, [session]);
+
+  useEffect(() => {
     if (!printLearnerIds.length) return;
     const printTimer = window.setTimeout(() => window.print(), 150);
     const finishPrint = () => setPrintLearnerIds([]);
@@ -475,8 +509,10 @@ function App() {
     setActiveThemeId(themeForEducationType(nextSchool.educationType));
     setGroupMode(account.role === 'Directeur de groupe scolaire');
     setView(account.role === 'Parent / responsable légal' ? 'family' : account.role === 'Élève / étudiant' ? 'learnerPortal' : account.role === 'Caissier' ? 'finance' : roleNavigation[account.role]?.[0] ?? 'overview');
+    window.localStorage.setItem('educore-demo-session', JSON.stringify({ account, profile }));
   };
   const logout = () => {
+    window.localStorage.removeItem('educore-demo-session');
     setSession(null);
     setLearnersBySchool(initialLearnersBySchool);
     setArchivesBySchool(createInitialArchives());

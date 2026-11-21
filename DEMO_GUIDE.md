@@ -2,8 +2,9 @@
 
 ## Durée recommandée : 15 à 20 minutes
 
-1. **Page publique** — ouvrez `/public`, présentez les solutions maternelle, primaire, secondaire, université et groupes.
-2. **Connexion** — choisissez le profil `Primaire`, puis le rôle `Directeur`.
+1. **Page publique** — ouvrez `/`, présentez les solutions maternelle, primaire, secondaire, université et groupes.
+2. **Bouton de connexion** — cliquez sur `Se connecter` dans la barre supérieure.
+3. **Connexion client** — sur `/login`, choisissez le profil `Primaire`, puis le rôle `Directeur`.
 3. **Vue direction** — montrez les indicateurs, les prochaines actions et les données de l’établissement.
 4. **Configuration dynamique** — changez pour Maternelle, puis Université afin de montrer l’adaptation des menus.
 5. **Apprenants** — ajoutez un élève, recherchez-le et exportez la liste CSV.

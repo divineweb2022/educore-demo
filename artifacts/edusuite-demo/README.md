@@ -15,7 +15,9 @@ pnpm dev
 
 Ouvrez ensuite [http://localhost:3000](http://localhost:3000). Le serveur Next.js démarre sur le port 3000.
 
-Le site public commercial est disponible sur `http://localhost:3000/public`.
+Le site public commercial est disponible sur `http://localhost:3000/`.
+La page de connexion client est disponible sur `http://localhost:3000/login`.
+Après authentification fictive, l’application s’ouvre sur `http://localhost:3000/demo`.
 
 Pour vérifier la compilation de production :
 
@@ -39,7 +41,21 @@ L’API démarre sur `http://localhost:5000/api`. Les endpoints de démonstratio
 
 ## Déployer sur Vercel
 
-Importez le dépôt dans Vercel, puis choisissez `artifacts/edusuite-demo` comme **Root Directory**. Vercel détecte Next.js et utilise `pnpm run build`. Le site statique est généré dans `out/`. Aucune variable d’environnement n’est nécessaire pour cette démo.
+### Option recommandée : monorepo à la racine
+
+Importez le dépôt dans Vercel sans définir `Root Directory` sur un dossier vide. Le fichier `vercel.json` à la racine lance automatiquement :
+
+```text
+pnpm --filter @workspace/edusuite-demo run build
+```
+
+La sortie statique est attendue dans `artifacts/edusuite-demo/out`.
+
+### Option alternative : application seule
+
+Dans les paramètres Vercel, choisissez `artifacts/edusuite-demo` comme **Root Directory**. Vercel détectera alors directement Next.js et utilisera `pnpm run build`.
+
+Aucune variable d’environnement n’est nécessaire pour cette démo statique.
 
 ## Fonctions de présentation
 

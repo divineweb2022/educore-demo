@@ -7,7 +7,7 @@ export default function PublicPage() {
     <main style={{ background: "#f7f8f6", color: "#263344", minHeight: "100vh", fontFamily: "DM Sans, sans-serif" }}>
       <nav style={{ maxWidth: 1180, margin: "0 auto", height: 76, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px" }}>
         <strong style={{ fontSize: 20 }}>edu<span style={{ color: "#397968" }}>core</span></strong>
-        <Link href="/" style={{ textDecoration: "none", background: "#1f6555", color: "white", padding: "11px 16px", borderRadius: 9, fontWeight: 700, fontSize: 13 }}>Accéder à la démo</Link>
+        <Link href="/login" style={{ textDecoration: "none", background: "#1f6555", color: "white", padding: "11px 16px", borderRadius: 9, fontWeight: 700, fontSize: 13 }}>Se connecter</Link>
       </nav>
       <section style={{ maxWidth: 1180, margin: "0 auto", padding: "90px 24px", display: "grid", gridTemplateColumns: "1.2fr .8fr", gap: 60, alignItems: "center" }}>
         <div>

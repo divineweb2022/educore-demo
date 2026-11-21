@@ -11,7 +11,10 @@
   "packageManager": "pnpm@10.15.1",
   "private": true,
   "dependencies": {
-    "@replit/connectors-sdk": "^0.7.0"
+    "@replit/connectors-sdk": "^0.7.0",
+    "next": "^16.4.6",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
     "prettier": "^3.9.10",
